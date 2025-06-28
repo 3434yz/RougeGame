@@ -22,7 +22,7 @@ public class PlayerIdleState : PlayerGroundState
         {
             _stateMachine.ChangeState(_player.JumpFall);
         }
-
+        _player.UpdateVelocity();
         return 0;
     }
 }

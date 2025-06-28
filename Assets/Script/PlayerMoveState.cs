@@ -12,6 +12,7 @@ public class PlayerMoveState : PlayerGroundState
         if (false == _player._moving)
             _player.StateMachine.ChangeState(_player.Idle);
 
+        _player.UpdateVelocity();
         return 0;
     }
 }

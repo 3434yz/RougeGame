@@ -192,13 +192,11 @@ partial class Player
             {
                 playerMoveValue.x = 0;
                 playerMoveValue.y = -1;
-                _moving = true;
             }
             else if (_kbMovingDown)
             {
                 playerMoveValue.x = 0;
                 playerMoveValue.y = 1;
-                _moving = true;
             }
             else if (_kbMovingLeft)
             {

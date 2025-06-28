@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public abstract class EntityState
 {
     protected Player _player;
@@ -18,7 +20,6 @@ public abstract class EntityState
 
     public virtual int Update()
     {
-        // Debug.Log($"Update {_animBoolName}");
         _player.mAnimator.SetFloat("yVelocity", _player.CurrentVelocity.y);
         return 0;
     }

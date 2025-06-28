@@ -12,7 +12,7 @@ public class PlayerJumpState : PlayerAirState
         base.Enter();
 
         _player.SetVelocity(new Vector2(_player.CurrentVelocity.x, _player.Scene.PlayerSpeed.y));
-        _player.OnFloor = false;
+        _player.OnGround = false;
     }
 
     public override int Update()
@@ -22,6 +22,7 @@ public class PlayerJumpState : PlayerAirState
         if (_player.CurrentVelocity.y <= 0)
             _player.StateMachine.ChangeState(_player.JumpFall);
 
+        _player.UpdateVelocity();
         return 0;
     }
 

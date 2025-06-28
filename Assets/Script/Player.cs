@@ -11,6 +11,7 @@ public partial class Player
     public PlayerMoveState Move;
     public PlayerJumpState Jump;
     public PlayerJumpFallState JumpFall;
+    public PlayerWallSlideState WallSlide;
 
     private GameObject _playerGameObject;
     private Transform _animTransform;
@@ -20,9 +21,8 @@ public partial class Player
 
     public Vector2 mSize;
 
-    public bool OnFloor { set; get; } // 
+    public bool OnGround { set; get; } // 
     public int WallPushDir; // 面对墙壁移动
-    public bool WallSlide;
     public int FaceDirection { get; private set; }
     public Vector2 CurrentVelocity;
     public Vector2 CurrentPosition;
@@ -36,6 +36,7 @@ public partial class Player
         Move = new PlayerMoveState(this, StateMachine, "moving");
         Jump = new PlayerJumpState(this, StateMachine, "jumpFall");
         JumpFall = new PlayerJumpFallState(this, StateMachine, "jumpFall");
+        WallSlide = new PlayerWallSlideState(this, StateMachine, "wallSlide");
         FaceDirection = 1;
     }
 
@@ -58,9 +59,6 @@ public partial class Player
     public int Update()
     {
         StateMachine.Update();
-
-        UpdateVelocity();
-        Flip();
 
         var blocks = _stage.blocks;
         var bakPosition = CurrentPosition;
@@ -110,7 +108,7 @@ public partial class Player
                     more = true;
                 }
 
-                if (cy && OnFloor is false)
+                if (cy && OnGround is false)
                 {
                     CurrentPosition.y = finalPosition.y;
                     more = true;
@@ -166,10 +164,10 @@ public partial class Player
             if ((pushOutWays & (int)PushOutWay.Up) != 0)
             {
                 CurrentVelocity.y = 0;
-                OnFloor = true;
+                OnGround = true;
             }
             else if ((pushOutWays & (int)PushOutWay.Down) != 0) CurrentVelocity.y = 0;
-            else OnFloor = false;
+            else OnGround = false;
 
             if ((pushOutWays & (int)PushOutWay.Left) != 0)
             {
@@ -186,7 +184,7 @@ public partial class Player
         else
         {
             WallPushDir = 0;
-            OnFloor = false;
+            OnGround = false;
         }
 
         return pushOutWays;
@@ -200,13 +198,19 @@ public partial class Player
         return pos;
     }
 
+    // public void CheckFacingDir()
+    // {
+    //     if (FaceDirection != (int)playerLastMoveValue.x)
+    //     {
+    //         FaceDirection = (int)playerLastMoveValue.x;
+    //         Flip();
+    //     }
+    // }
+
     public void Flip()
     {
-        if (FaceDirection != (int)playerLastMoveValue.x)
-        {
-            FaceDirection = (int)playerLastMoveValue.x;
-            _animTransform.Rotate(0, 180, 0);
-        }
+        FaceDirection *= -1;
+        _animTransform.Rotate(0, 180, 0);
     }
 
     public void SetVelocity(Vector2 velocity)
@@ -214,24 +218,43 @@ public partial class Player
         CurrentVelocity = velocity;
     }
 
-    public void UpdateVelocity()
+    public void UpdateVelocity(float scaleX = 1, float scaleY = 1)
     {
         if (WallPushDir + FaceDirection == 0) CurrentVelocity.x = 0;
         else CurrentVelocity.x = Scene.PlayerSpeed.x * playerMoveValue.x;
 
-        if (OnFloor) CurrentVelocity.y = 0;
-        else
-        {
-            CurrentVelocity.y -= Scene.PlayerGravity;
-            if (WallSlide) CurrentVelocity.y = 0;
-        }
+        if (OnGround) CurrentVelocity.y = 0;
+        else CurrentVelocity.y -= Scene.PlayerGravity;
+
+        CurrentVelocity.x *= scaleX;
+        CurrentVelocity.y *= scaleY;
+        
+        HandleFlip(CurrentVelocity.x);
+    }
+
+    public void HandleFlip(float xVelocity)
+    {
+        if (xVelocity == 0 && playerMoveValue.x == 0)
+            return;
+        if(xVelocity > 0 && FaceDirection == -1)
+            Flip();
+        else if (xVelocity < 0 && FaceDirection == 1)
+            Flip();
+    }
+
+    /// <summary>
+    /// 是否一直对着墙壁移动
+    /// </summary>
+    /// <returns></returns>
+    public bool KeepingPushWall()
+    {
+        return playerMoveValue.x != 0 && CurrentVelocity.x == 0;
     }
 
     public void UpdateGroundVelocity()
     {
-        
     }
-    
+
 
     public void Draw()
     {
