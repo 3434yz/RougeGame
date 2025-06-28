@@ -22,9 +22,10 @@ public partial class Player
 
     public bool OnFloor { set; get; } // 
     public int WallPushDir; // 面对墙壁移动
-    private int _faceDirection = 1;
+    public bool WallSlide;
+    public int FaceDirection { get; private set; }
     public Vector2 CurrentVelocity;
-    private Vector2 _currentPosition;
+    public Vector2 CurrentPosition;
 
     public Player(Scene scene)
     {
@@ -35,14 +36,15 @@ public partial class Player
         Move = new PlayerMoveState(this, StateMachine, "moving");
         Jump = new PlayerJumpState(this, StateMachine, "jumpFall");
         JumpFall = new PlayerJumpFallState(this, StateMachine, "jumpFall");
+        FaceDirection = 1;
     }
 
     public void OnEnterStage(Stage stage, Vector2 position)
     {
         _stage = stage;
 
-        _currentPosition = position;
-        _playerGameObject = Object.Instantiate(Scene.playerPrefab, _currentPosition, Quaternion.identity);
+        CurrentPosition = position;
+        _playerGameObject = Object.Instantiate(Scene.playerPrefab, CurrentPosition, Quaternion.identity);
         _animTransform = _playerGameObject.transform.Find("Animator");
 
         mAnimator = _animTransform.GetComponentInChildren<Animator>();
@@ -61,7 +63,7 @@ public partial class Player
         Flip();
 
         var blocks = _stage.blocks;
-        var bakPosition = _currentPosition;
+        var bakPosition = CurrentPosition;
         var velocityX = Mathf.Abs(CurrentVelocity.x);
         var velocityY = Mathf.Abs(CurrentVelocity.y);
         var stepCount = velocityX > velocityY
@@ -70,7 +72,7 @@ public partial class Player
         var incrVelocityX = CurrentVelocity.x / stepCount;
         var incrVelocityY = CurrentVelocity.y / stepCount;
         var finalPosition =
-            new Vector2(_currentPosition.x + CurrentVelocity.x, _currentPosition.y + CurrentVelocity.y);
+            new Vector2(CurrentPosition.x + CurrentVelocity.x, CurrentPosition.y + CurrentVelocity.y);
         var xMoveDir = (int)playerMoveValue.x;
         var yMoveDir = CurrentVelocity.y > 0 ? 1 : -1;
         if (velocityX >= Stage.WALL_WIDTH || velocityY >= Stage.WALL_WIDTH)
@@ -82,35 +84,35 @@ public partial class Player
 
                 if (0 != CurrentVelocity.x)
                 {
-                    if (Tools.Cover(xMoveDir, _currentPosition.x + incrVelocityX, finalPosition.x))
-                        _currentPosition.x = finalPosition.x;
-                    else _currentPosition.x += incrVelocityX;
+                    if (Tools.Cover(xMoveDir, CurrentPosition.x + incrVelocityX, finalPosition.x))
+                        CurrentPosition.x = finalPosition.x;
+                    else CurrentPosition.x += incrVelocityX;
                 }
 
                 if (0 != CurrentVelocity.y)
                 {
-                    if (Tools.Cover(yMoveDir, _currentPosition.y + incrVelocityY, finalPosition.y))
-                        _currentPosition.y = finalPosition.y;
-                    else _currentPosition.y += incrVelocityY;
+                    if (Tools.Cover(yMoveDir, CurrentPosition.y + incrVelocityY, finalPosition.y))
+                        CurrentPosition.y = finalPosition.y;
+                    else CurrentPosition.y += incrVelocityY;
                 }
 
                 PathDetection(blocks);
             }
 
-            var cx = Tools.Cover(xMoveDir, _currentPosition.x, finalPosition.x) is false;
-            var cy = Tools.Cover(yMoveDir, _currentPosition.y, finalPosition.y) is false;
+            var cx = Tools.Cover(xMoveDir, CurrentPosition.x, finalPosition.x) is false;
+            var cy = Tools.Cover(yMoveDir, CurrentPosition.y, finalPosition.y) is false;
             if (cx || cy)
             {
                 var more = false;
                 if (cx && WallPushDir == 0)
                 {
-                    _currentPosition.x = finalPosition.x;
+                    CurrentPosition.x = finalPosition.x;
                     more = true;
                 }
 
                 if (cy && OnFloor is false)
                 {
-                    _currentPosition.y = finalPosition.y;
+                    CurrentPosition.y = finalPosition.y;
                     more = true;
                 }
 
@@ -119,7 +121,7 @@ public partial class Player
         }
         else
         {
-            _currentPosition = finalPosition;
+            CurrentPosition = finalPosition;
             PathDetection(blocks);
         }
 
@@ -131,8 +133,8 @@ public partial class Player
         var posLT = GetPosLT();
         var posRB = new Vector2
         {
-            x = posLT.x + mSize.x - 0.01f,
-            y = posLT.y - mSize.y + 0.01f
+            x = posLT.x + mSize.x - 0.001f,
+            y = posLT.y - mSize.y + 0.001f
         };
 
         var pushOutWays = 0;
@@ -159,8 +161,8 @@ public partial class Player
 
         if (pushOutWays != 0)
         {
-            _currentPosition.x = posLT.x + mSize.x / 2;
-            _currentPosition.y = posLT.y - mSize.y;
+            CurrentPosition.x = posLT.x + mSize.x / 2;
+            CurrentPosition.y = posLT.y - mSize.y;
             if ((pushOutWays & (int)PushOutWay.Up) != 0)
             {
                 CurrentVelocity.y = 0;
@@ -181,13 +183,18 @@ public partial class Player
             }
             else WallPushDir = 0;
         }
+        else
+        {
+            WallPushDir = 0;
+            OnFloor = false;
+        }
 
         return pushOutWays;
     }
 
     public Vector2 GetPosLT()
     {
-        var pos = _currentPosition;
+        var pos = CurrentPosition;
         pos.x -= mSize.x / 2;
         pos.y += mSize.y;
         return pos;
@@ -195,9 +202,9 @@ public partial class Player
 
     public void Flip()
     {
-        if (_faceDirection != (int)playerLastMoveValue.x)
+        if (FaceDirection != (int)playerLastMoveValue.x)
         {
-            _faceDirection = (int)playerLastMoveValue.x;
+            FaceDirection = (int)playerLastMoveValue.x;
             _animTransform.Rotate(0, 180, 0);
         }
     }
@@ -209,15 +216,27 @@ public partial class Player
 
     public void UpdateVelocity()
     {
-        if (WallPushDir + _faceDirection == 0) CurrentVelocity.x = 0;
+        if (WallPushDir + FaceDirection == 0) CurrentVelocity.x = 0;
         else CurrentVelocity.x = Scene.PlayerSpeed.x * playerMoveValue.x;
+
         if (OnFloor) CurrentVelocity.y = 0;
-        else CurrentVelocity.y -= Scene.PlayerGravity;
+        else
+        {
+            CurrentVelocity.y -= Scene.PlayerGravity;
+            if (WallSlide) CurrentVelocity.y = 0;
+        }
     }
+
+    public void UpdateGroundVelocity()
+    {
+        
+    }
+    
 
     public void Draw()
     {
-        // Debug.Log($"Draw Position: {mPos.x}, {mPos.y}");
-        _playerGameObject.transform.position = _currentPosition;
+        _playerGameObject.transform.position = CurrentPosition;
+        // if (Physics2D.Raycast(_currentPosition, Vector2.down, 0.5f, Scene.GroundLayer))
+        //     Debug.Log($"Draw Position: {_currentPosition.x}, {_currentPosition.y}");
     }
 }

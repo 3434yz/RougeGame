@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Scene : MonoBehaviour
@@ -12,8 +13,12 @@ public class Scene : MonoBehaviour
     public Vector2 PlayerSpeed;
     public float PlayerGravity;
 
+    [Header("Prefab")] 
     public GameObject playerPrefab;
     public GameObject blookPrefab;
+
+    [Header("Collision Details")] 
+    public LayerMask GroundLayer;
 
     internal const int numRows = 10, numCols = 10;
     internal const float cellSize = 0.5f;
@@ -24,8 +29,6 @@ public class Scene : MonoBehaviour
 
     // 逻辑帧率间隔时长
     public const float FrameDelay = 1.0f / FPS;
-
-    public Color gridColor = Color.white;
 
     private void Start()
     {
@@ -51,35 +54,10 @@ public class Scene : MonoBehaviour
         _stage.Draw();
     }
 
-    public static bool IsAABBIntersect(Vector2 aPos, Vector2 aSize, Vector2 bPos, Vector2 bSize)
+    private void OnDrawGizmos()
     {
-        if (bPos.x >= aPos.x) // b right of a
-        {
-            if (bPos.y <= aPos.y) // b down of a
-            {
-                if (bPos.x < aPos.x + aSize.x)
-                    return bPos.y > aPos.y - aSize.y;
-            }
-            else // b up of a
-            {
-                if (bPos.x < aPos.x + aSize.x)
-                    return bPos.y - bSize.y < aPos.y;
-            }
-        }
-        else // b left of a 
-        {
-            if (bPos.y <= aPos.y) // down of a
-            {
-                if (bPos.x + bSize.x > aPos.x)
-                    return bPos.y > aPos.y - aSize.y;
-            }
-            else // b up of a
-            {
-                if (bPos.x + bSize.x > aPos.x)
-                    return bPos.y - bSize.y < aPos.y;
-            }
-        }
-
-        return false;
+        // Gizmos.color = Color.red;
+        // Gizmos.DrawLine(_player.CurrentPosition,
+        //     _player.CurrentPosition + new Vector2(0.5f * _player.FaceDirection, 0));
     }
 }

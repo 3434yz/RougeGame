@@ -121,6 +121,11 @@ public class Block : ISpaceItemFloat<Block>
             WayOut.right = false;
             AtEdge = true;
         }
+        else
+        {
+            WayOut.right = blocks.TryAt(new XYi(cri.X + 1, cri.Y)) is null;
+            AtEdge = false;
+        }
 
         if (AtEdge && WayOut.IsZero())
         {
@@ -153,8 +158,8 @@ public class Block : ISpaceItemFloat<Block>
         };
         var cCenter = new Vector2
         {
-            x = cPosRB.x + cSize.x / 2,
-            y = cPosRB.y - cSize.y / 2,
+            x = cPosLT.x + cSize.x / 2,
+            y = cPosLT.y - cSize.y / 2,
         };
         float dLeft, dRight, dUp, dDown;
         if (cCenter.x >= bCenter.x)
@@ -172,7 +177,7 @@ public class Block : ISpaceItemFloat<Block>
             }
             else
             {
-                if (WayOut.up) dUp = Position.y - bPosRb.y;
+                if (WayOut.up) dUp = Position.y - cPosRB.y;
                 else dUp = Mathf.Infinity;
                 if (WayOut.down) dDown = cPosLT.y - Position.y + cSize.y;
                 else dDown = Mathf.Infinity;
@@ -193,7 +198,7 @@ public class Block : ISpaceItemFloat<Block>
             }
             else
             {
-                if (WayOut.up) dUp = Position.y - bPosRb.y;
+                if (WayOut.up) dUp = Position.y - cPosRB.y;
                 else dUp = Mathf.Infinity;
                 if (WayOut.down) dDown = cPosLT.y - Position.y + cSize.y;
                 else dDown = Mathf.Infinity;
@@ -268,6 +273,6 @@ public class Block : ISpaceItemFloat<Block>
 
     public bool IsCrossBox(Vector2 cPosLT, Vector2 cSize)
     {
-        return Scene.IsAABBIntersect(Position, Size, cPosLT, cSize);
+        return Physics.IsAABBIntersect(Position, Size, cPosLT, cSize);
     }
 }

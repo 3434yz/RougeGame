@@ -17,7 +17,7 @@ public class Stage
                            "B        B\n" +
                            "B    P   B\n" +
                            "B        B\n" +
-                           "B        B\n" +
+                           "B    B   B\n" +
                            "BBBBBBBBBB";
 
     public SpaceIndexFloat<Block> blocks;

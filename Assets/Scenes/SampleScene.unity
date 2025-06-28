@@ -371,10 +371,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Time: 0
   TimePool: 0
-  PlayerSpeed: {x: 0.1, y: 0.1}
+  PlayerSpeed: {x: 0.1, y: 0.15}
   PlayerGravity: 0.01
   playerPrefab: {fileID: 2889218459516898370, guid: 3a54e5b392914554cb52ff60ba6a1ef0, type: 3}
   blookPrefab: {fileID: 7312231334256804344, guid: a98a4faa1471d75469c63d74fe668ef6, type: 3}
+  GroundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  WallLayer:
+    serializedVersion: 2
+    m_Bits: 0
   gridColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &998216547
 Transform:
