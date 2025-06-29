@@ -12,6 +12,7 @@ public partial class Player
     public PlayerJumpState Jump;
     public PlayerJumpFallState JumpFall;
     public PlayerWallSlideState WallSlide;
+    public PlayerWallJumpState WallJump;
 
     private GameObject _playerGameObject;
     private Transform _animTransform;
@@ -37,6 +38,8 @@ public partial class Player
         Jump = new PlayerJumpState(this, StateMachine, "jumpFall");
         JumpFall = new PlayerJumpFallState(this, StateMachine, "jumpFall");
         WallSlide = new PlayerWallSlideState(this, StateMachine, "wallSlide");
+        WallJump = new PlayerWallJumpState(this, StateMachine, "jumpFall");
+
         FaceDirection = 1;
     }
 
@@ -166,7 +169,8 @@ public partial class Player
                 CurrentVelocity.y = 0;
                 OnGround = true;
             }
-            else if ((pushOutWays & (int)PushOutWay.Down) != 0) CurrentVelocity.y = 0;
+            else if ((pushOutWays & (int)PushOutWay.Down) != 0) 
+                CurrentVelocity.y = 0;
             else OnGround = false;
 
             if ((pushOutWays & (int)PushOutWay.Left) != 0)
@@ -198,15 +202,6 @@ public partial class Player
         return pos;
     }
 
-    // public void CheckFacingDir()
-    // {
-    //     if (FaceDirection != (int)playerLastMoveValue.x)
-    //     {
-    //         FaceDirection = (int)playerLastMoveValue.x;
-    //         Flip();
-    //     }
-    // }
-
     public void Flip()
     {
         FaceDirection *= -1;
@@ -216,6 +211,7 @@ public partial class Player
     public void SetVelocity(Vector2 velocity)
     {
         CurrentVelocity = velocity;
+        HandleFlip(CurrentVelocity.x);
     }
 
     public void UpdateVelocity(float scaleX = 1, float scaleY = 1)
@@ -228,7 +224,7 @@ public partial class Player
 
         CurrentVelocity.x *= scaleX;
         CurrentVelocity.y *= scaleY;
-        
+
         HandleFlip(CurrentVelocity.x);
     }
 
@@ -236,7 +232,7 @@ public partial class Player
     {
         if (xVelocity == 0 && playerMoveValue.x == 0)
             return;
-        if(xVelocity > 0 && FaceDirection == -1)
+        if (xVelocity > 0 && FaceDirection == -1)
             Flip();
         else if (xVelocity < 0 && FaceDirection == 1)
             Flip();

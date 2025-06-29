@@ -22,7 +22,7 @@ public class PlayerJumpState : PlayerAirState
         if (_player.CurrentVelocity.y <= 0)
             _player.StateMachine.ChangeState(_player.JumpFall);
 
-        _player.UpdateVelocity();
+        _player.UpdateVelocity(0.5f,1);
         return 0;
     }
 

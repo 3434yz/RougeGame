@@ -13,16 +13,11 @@ public class PlayerIdleState : PlayerGroundState
     public override int Update()
     {
         base.Update();
-        if (_player._moving)
-        {
-            _stateMachine.ChangeState(_player.Move);
-        }
-
         if (_player.CurrentVelocity.y < 0)
-        {
             _stateMachine.ChangeState(_player.JumpFall);
-        }
-        _player.UpdateVelocity();
+        else if (_player._moving)
+            _stateMachine.ChangeState(_player.Move);
+        else _player.UpdateVelocity();
         return 0;
     }
 }

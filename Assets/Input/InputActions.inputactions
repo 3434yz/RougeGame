@@ -63,7 +63,16 @@
                     "name": "KBMoveRight",
                     "type": "Button",
                     "id": "ad575227-2396-4453-992a-01754bbe18ad",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "KBDash",
+                    "type": "Button",
+                    "id": "da869484-78c1-4721-b44f-2fe1cf3d8173",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -188,6 +197,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "KBMoveRight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "04295167-5f2d-47e9-8210-562ca30b606e",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "KBDash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
