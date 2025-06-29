@@ -13,6 +13,9 @@ public class PlayerJumpFallState : PlayerAirState
     public override int Update()
     {
         base.Update();
+        if (_player.Dashing())
+            return 0;
+        
         if (_player.CurrentVelocity.y == 0)
             _player.StateMachine.ChangeState(_player.Idle);
         else if (_player.playerMoveValue.x != 0 && _player.playerMoveValue.x + _player.WallPushDir == 0)

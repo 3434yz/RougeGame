@@ -15,7 +15,6 @@ public class PlayerGroundState : EntityState
 
     public override int Update()
     {
-        base.Update();
         if (_player._jumping && _player.OnGround)
             _stateMachine.ChangeState(_player.Jump);
 

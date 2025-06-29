@@ -371,10 +371,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Time: 0
   TimePool: 0
-  PlayerSpeed: {x: 0.1, y: 0.15}
-  PlayerGravity: 0.005
   playerPrefab: {fileID: 2889218459516898370, guid: 3a54e5b392914554cb52ff60ba6a1ef0, type: 3}
   blookPrefab: {fileID: 7312231334256804344, guid: a98a4faa1471d75469c63d74fe668ef6, type: 3}
+  PlayerSpeed: {x: 0.1, y: 0.15}
+  PlayerGravity: 0.005
+  PlayerAirSpeedScale: 0.5
+  PlayerWallSlideSpeedScale: 0.5
+  PlayerDashSpeed: 0.2
+  PlayerDashSeconds: 0.5
+  PlayerDashCDSeconds: 1
   GroundLayer:
     serializedVersion: 2
     m_Bits: 64

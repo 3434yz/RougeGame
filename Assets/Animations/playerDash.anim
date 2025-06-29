@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: playerWallSlide
+  m_Name: playerDash
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,11 +21,13 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -301905950, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
+      value: {fileID: 1695241095, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
     - time: 0.083333336
-      value: {fileID: -1252177499, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
+      value: {fileID: -763634288, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
     - time: 0.16666667
-      value: {fileID: -1875242047, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
+      value: {fileID: -1376633217, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
+    - time: 0.25
+      value: {fileID: -46734460, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -48,15 +50,16 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -301905950, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
-    - {fileID: -1252177499, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
-    - {fileID: -1875242047, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
+    - {fileID: 1695241095, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
+    - {fileID: -763634288, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
+    - {fileID: -1376633217, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
+    - {fileID: -46734460, guid: 18b74d38bd6b0254399b4ff75030355f, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.25
+    m_StopTime: 0.33333334
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

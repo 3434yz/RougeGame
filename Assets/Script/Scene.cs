@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Scene : MonoBehaviour
 {
@@ -9,13 +10,18 @@ public class Scene : MonoBehaviour
     public Stage _stage;
     public Player _player;
 
-    [Header("Player Movement Details")] 
-    public Vector2 PlayerSpeed;
-    public float PlayerGravity;
-
     [Header("Prefab")] 
     public GameObject playerPrefab;
     public GameObject blookPrefab;
+    
+    [Header("Player Movement Details")] 
+    public Vector2 PlayerSpeed;
+    public float PlayerGravity;
+    public float PlayerAirSpeedScale;
+    public float PlayerWallSlideSpeedScale;
+    public float PlayerDashSpeed;
+    public float PlayerDashSeconds;
+    public float PlayerDashCDSeconds;
 
     [Header("Collision Details")] 
     public LayerMask GroundLayer;

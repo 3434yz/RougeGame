@@ -149,7 +149,16 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""name"": ""KBMoveRight"",
                     ""type"": ""Button"",
                     ""id"": ""ad575227-2396-4453-992a-01754bbe18ad"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""KBDash"",
+                    ""type"": ""Button"",
+                    ""id"": ""da869484-78c1-4721-b44f-2fe1cf3d8173"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -276,6 +285,17 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""KBMoveRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""04295167-5f2d-47e9-8210-562ca30b606e"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""KBDash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -291,6 +311,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Player_KBMoveDown = m_Player.FindAction("KBMoveDown", throwIfNotFound: true);
         m_Player_KBMoveLeft = m_Player.FindAction("KBMoveLeft", throwIfNotFound: true);
         m_Player_KBMoveRight = m_Player.FindAction("KBMoveRight", throwIfNotFound: true);
+        m_Player_KBDash = m_Player.FindAction("KBDash", throwIfNotFound: true);
     }
 
     ~@InputActions()
@@ -378,6 +399,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_KBMoveDown;
     private readonly InputAction m_Player_KBMoveLeft;
     private readonly InputAction m_Player_KBMoveRight;
+    private readonly InputAction m_Player_KBDash;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -417,6 +439,10 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/KBMoveRight".
         /// </summary>
         public InputAction @KBMoveRight => m_Wrapper.m_Player_KBMoveRight;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/KBDash".
+        /// </summary>
+        public InputAction @KBDash => m_Wrapper.m_Player_KBDash;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -464,6 +490,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @KBMoveRight.started += instance.OnKBMoveRight;
             @KBMoveRight.performed += instance.OnKBMoveRight;
             @KBMoveRight.canceled += instance.OnKBMoveRight;
+            @KBDash.started += instance.OnKBDash;
+            @KBDash.performed += instance.OnKBDash;
+            @KBDash.canceled += instance.OnKBDash;
         }
 
         /// <summary>
@@ -496,6 +525,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @KBMoveRight.started -= instance.OnKBMoveRight;
             @KBMoveRight.performed -= instance.OnKBMoveRight;
             @KBMoveRight.canceled -= instance.OnKBMoveRight;
+            @KBDash.started -= instance.OnKBDash;
+            @KBDash.performed -= instance.OnKBDash;
+            @KBDash.canceled -= instance.OnKBDash;
         }
 
         /// <summary>
@@ -585,5 +617,12 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnKBMoveRight(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "KBDash" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnKBDash(InputAction.CallbackContext context);
     }
 }

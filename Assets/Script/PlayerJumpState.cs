@@ -18,11 +18,11 @@ public class PlayerJumpState : PlayerAirState
     public override int Update()
     {
         base.Update();
+        if (_player.Dashing())
+            return 0;
 
-        if (_player.CurrentVelocity.y <= 0)
-            _player.StateMachine.ChangeState(_player.JumpFall);
-
-        _player.UpdateVelocity(0.5f,1);
+        if (_player.CurrentVelocity.y <= 0) _player.StateMachine.ChangeState(_player.JumpFall);
+        else _player.UpdateVelocity(0.5f);
         return 0;
     }
 

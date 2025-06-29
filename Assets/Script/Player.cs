@@ -13,6 +13,7 @@ public partial class Player
     public PlayerJumpFallState JumpFall;
     public PlayerWallSlideState WallSlide;
     public PlayerWallJumpState WallJump;
+    public PlayerDashState Dash;
 
     private GameObject _playerGameObject;
     private Transform _animTransform;
@@ -22,11 +23,16 @@ public partial class Player
 
     public Vector2 mSize;
 
-    public bool OnGround { set; get; } // 
-    public int WallPushDir; // 面对墙壁移动
+    public bool OnGround { set; get; } // 地板推力
+    public int WallPushDir; // 墙壁推力方向
     public int FaceDirection { get; private set; }
     public Vector2 CurrentVelocity;
     public Vector2 CurrentPosition;
+
+    private int _dashCastingFrames; // 冲刺持续帧数
+    private int _dashColdDownFrames; // 冲刺CD
+    public int DashCastDelayFrames = 0; // 冲刺结束的帧数
+    public int DashReadyFrames = 0; // 冲刺就绪的帧数
 
     public Player(Scene scene)
     {
@@ -39,6 +45,10 @@ public partial class Player
         JumpFall = new PlayerJumpFallState(this, StateMachine, "jumpFall");
         WallSlide = new PlayerWallSlideState(this, StateMachine, "wallSlide");
         WallJump = new PlayerWallJumpState(this, StateMachine, "jumpFall");
+        Dash = new PlayerDashState(this, StateMachine, "dash");
+
+        _dashCastingFrames = (int)(Scene.PlayerDashSeconds * Scene.FPS);
+        _dashColdDownFrames = (int)(Scene.PlayerDashCDSeconds * Scene.FPS);
 
         FaceDirection = 1;
     }
@@ -61,8 +71,6 @@ public partial class Player
 
     public int Update()
     {
-        StateMachine.Update();
-
         var blocks = _stage.blocks;
         var bakPosition = CurrentPosition;
         var velocityX = Mathf.Abs(CurrentVelocity.x);
@@ -126,6 +134,7 @@ public partial class Player
             PathDetection(blocks);
         }
 
+        StateMachine.Update();
         return 0;
     }
 
@@ -169,7 +178,7 @@ public partial class Player
                 CurrentVelocity.y = 0;
                 OnGround = true;
             }
-            else if ((pushOutWays & (int)PushOutWay.Down) != 0) 
+            else if ((pushOutWays & (int)PushOutWay.Down) != 0)
                 CurrentVelocity.y = 0;
             else OnGround = false;
 
@@ -222,10 +231,10 @@ public partial class Player
         if (OnGround) CurrentVelocity.y = 0;
         else CurrentVelocity.y -= Scene.PlayerGravity;
 
+        HandleFlip(CurrentVelocity.x);
+
         CurrentVelocity.x *= scaleX;
         CurrentVelocity.y *= scaleY;
-
-        HandleFlip(CurrentVelocity.x);
     }
 
     public void HandleFlip(float xVelocity)
@@ -236,6 +245,24 @@ public partial class Player
             Flip();
         else if (xVelocity < 0 && FaceDirection == 1)
             Flip();
+    }
+
+    public void CastDash()
+    {
+        if (!CanDash()) return;
+        DashReadyFrames = Scene.Time + _dashColdDownFrames;
+        DashCastDelayFrames = Scene.Time + _dashCastingFrames;
+        SetVelocity(new Vector2(Scene.PlayerDashSpeed * FaceDirection, 0));
+    }
+
+    public bool CanDash()
+    {
+        return Scene.Time > DashReadyFrames;
+    }
+
+    public bool Dashing()
+    {
+        return DashCastDelayFrames > Scene.Time;
     }
 
     /// <summary>

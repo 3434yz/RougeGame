@@ -21,6 +21,12 @@ public abstract class EntityState
     public virtual int Update()
     {
         _player.mAnimator.SetFloat("yVelocity", _player.CurrentVelocity.y);
+        if (_player.InvokerDash())
+        {
+            if(_player.CanDash())
+                _player.StateMachine.ChangeState(_player.Dash);
+        }
+        Debug.Log($"current state:{_player.StateMachine._currentState._animBoolName}");
         return 0;
     }
 

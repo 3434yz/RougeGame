@@ -91,7 +91,6 @@ partial class Player
             _usingKeyboard = true;
             _kbMovingRight = false;
         };
-
         // gamepad
         _iapa.GPJump.started += c =>
         {
@@ -228,5 +227,9 @@ partial class Player
         {
             playerLastMoveValue = playerMoveValue;
         }
+    }
+    public bool InvokerDash()
+    {
+        return _iapa.KBDash.WasPressedThisFrame();
     }
 }
