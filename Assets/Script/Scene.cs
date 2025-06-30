@@ -19,10 +19,16 @@ public class Scene : MonoBehaviour
     public float PlayerGravity;
     public float PlayerAirSpeedScale;
     public float PlayerWallSlideSpeedScale;
+    
+    [Header("Player Dash Details")]
     public float PlayerDashSpeed;
     public float PlayerDashSeconds;
     public float PlayerDashCDSeconds;
 
+    [Header("Player Attack Details")] 
+    public int PlayerAttackCastFrames;
+    public int PlayerAttackCalFrames;
+    
     [Header("Collision Details")] 
     public LayerMask GroundLayer;
 

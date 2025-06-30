@@ -162,6 +162,15 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""acbfce75-112d-4cb5-8b70-4eaa48a14f09"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -296,6 +305,17 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""KBDash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a7c005d-0ec3-491c-adb7-421d7d739fd0"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -312,6 +332,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Player_KBMoveLeft = m_Player.FindAction("KBMoveLeft", throwIfNotFound: true);
         m_Player_KBMoveRight = m_Player.FindAction("KBMoveRight", throwIfNotFound: true);
         m_Player_KBDash = m_Player.FindAction("KBDash", throwIfNotFound: true);
+        m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
     }
 
     ~@InputActions()
@@ -400,6 +421,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_KBMoveLeft;
     private readonly InputAction m_Player_KBMoveRight;
     private readonly InputAction m_Player_KBDash;
+    private readonly InputAction m_Player_Attack;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -443,6 +465,10 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/KBDash".
         /// </summary>
         public InputAction @KBDash => m_Wrapper.m_Player_KBDash;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Attack".
+        /// </summary>
+        public InputAction @Attack => m_Wrapper.m_Player_Attack;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -493,6 +519,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @KBDash.started += instance.OnKBDash;
             @KBDash.performed += instance.OnKBDash;
             @KBDash.canceled += instance.OnKBDash;
+            @Attack.started += instance.OnAttack;
+            @Attack.performed += instance.OnAttack;
+            @Attack.canceled += instance.OnAttack;
         }
 
         /// <summary>
@@ -528,6 +557,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @KBDash.started -= instance.OnKBDash;
             @KBDash.performed -= instance.OnKBDash;
             @KBDash.canceled -= instance.OnKBDash;
+            @Attack.started -= instance.OnAttack;
+            @Attack.performed -= instance.OnAttack;
+            @Attack.canceled -= instance.OnAttack;
         }
 
         /// <summary>
@@ -624,5 +656,12 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnKBDash(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Attack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAttack(InputAction.CallbackContext context);
     }
 }

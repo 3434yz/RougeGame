@@ -15,7 +15,12 @@ public class PlayerDashState : EntityState
     {
         base.Update();
         if (_player.Dashing() is false)
-            _player.StateMachine.ChangeState(_player.Idle);
+        {
+            if(_player.OnGround) _player.StateMachine.ChangeState(_player.Idle);
+            else if(_player.WallPushDir != 0) _player.StateMachine.ChangeState(_player.WallSlide);
+            _player.UpdateVelocity(0, 1);
+        }
+        
         return 0;
     }
 

@@ -11,7 +11,8 @@ public class PlayerWallJumpState : PlayerAirState
     {
         base.Enter();
 
-        _player.SetVelocity(new Vector2(_player.Scene.PlayerSpeed.x * -_player.FaceDirection,
+        _player.SetVelocity(new Vector2(
+            _player.Scene.PlayerSpeed.x * -_player.FaceDirection * _player.Scene.PlayerAirSpeedScale,
             _player.Scene.PlayerSpeed.y));
     }
 
@@ -22,6 +23,7 @@ public class PlayerWallJumpState : PlayerAirState
             _player.StateMachine.ChangeState(_player.Idle);
         else if (_player.CurrentVelocity.y <= 0)
             _player.StateMachine.ChangeState(_player.JumpFall);
+        else _player.UpdateGravityVelocity();
         // if (_player.playerMoveValue.x != 0 && _player.playerMoveValue.x + _player.WallPushDir == 0)
         //     _player.StateMachine.ChangeState(_player.WallSlide);
         return 0;

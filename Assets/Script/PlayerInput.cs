@@ -228,8 +228,14 @@ partial class Player
             playerLastMoveValue = playerMoveValue;
         }
     }
+
     public bool InvokerDash()
     {
         return _iapa.KBDash.WasPressedThisFrame();
+    }
+
+    public bool InvokerAttack()
+    {
+        return _iapa.Attack.WasPressedThisFrame();
     }
 }

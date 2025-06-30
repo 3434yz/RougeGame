@@ -351,7 +351,7 @@ GameObject:
   - component: {fileID: 998216547}
   - component: {fileID: 998216546}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: GameManger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -373,13 +373,15 @@ MonoBehaviour:
   TimePool: 0
   playerPrefab: {fileID: 2889218459516898370, guid: 3a54e5b392914554cb52ff60ba6a1ef0, type: 3}
   blookPrefab: {fileID: 7312231334256804344, guid: a98a4faa1471d75469c63d74fe668ef6, type: 3}
-  PlayerSpeed: {x: 0.1, y: 0.15}
-  PlayerGravity: 0.005
+  PlayerSpeed: {x: 0.1, y: 0.11}
+  PlayerGravity: 0.01
   PlayerAirSpeedScale: 0.5
   PlayerWallSlideSpeedScale: 0.5
   PlayerDashSpeed: 0.2
   PlayerDashSeconds: 0.5
   PlayerDashCDSeconds: 1
+  PlayerAttackCastFrames: 40
+  PlayerAttackCalFrames: 0
   GroundLayer:
     serializedVersion: 2
     m_Bits: 64

@@ -14,14 +14,15 @@ public partial class Player
     public PlayerWallSlideState WallSlide;
     public PlayerWallJumpState WallJump;
     public PlayerDashState Dash;
+    public PlayerBaseAttackState BaseAttack;
 
     private GameObject _playerGameObject;
     private Transform _animTransform;
-    public Animator mAnimator;
-    public SpriteRenderer mSR;
-    public BoxCollider2D mCollider2D;
+    public Animator Animator;
+    public SpriteRenderer SpriteRenderer;
+    public BoxCollider2D Collider2D;
 
-    public Vector2 mSize;
+    public Vector2 Size;
 
     public bool OnGround { set; get; } // 地板推力
     public int WallPushDir; // 墙壁推力方向
@@ -31,8 +32,14 @@ public partial class Player
 
     private int _dashCastingFrames; // 冲刺持续帧数
     private int _dashColdDownFrames; // 冲刺CD
-    public int DashCastDelayFrames = 0; // 冲刺结束的帧数
-    public int DashReadyFrames = 0; // 冲刺就绪的帧数
+    private int _dashCastDelayFrames; // 冲刺结束的帧数
+    private int _dashReadyFrames; // 冲刺就绪的帧数
+
+    private int _attackCastingFrames; // 攻击动画持续帧
+    private int _attackCalFrames;
+    private int _attackCastingDelayFrames; // 攻击动画结束帧
+
+    private AnimationClip testClip;
 
     public Player(Scene scene)
     {
@@ -46,9 +53,13 @@ public partial class Player
         WallSlide = new PlayerWallSlideState(this, StateMachine, "wallSlide");
         WallJump = new PlayerWallJumpState(this, StateMachine, "jumpFall");
         Dash = new PlayerDashState(this, StateMachine, "dash");
+        BaseAttack = new PlayerBaseAttackState(this, StateMachine, "baseAttack");
 
         _dashCastingFrames = (int)(Scene.PlayerDashSeconds * Scene.FPS);
         _dashColdDownFrames = (int)(Scene.PlayerDashCDSeconds * Scene.FPS);
+
+        _attackCastingFrames = Scene.PlayerAttackCastFrames;
+        _attackCalFrames = Scene.PlayerAttackCalFrames;
 
         FaceDirection = 1;
     }
@@ -61,15 +72,33 @@ public partial class Player
         _playerGameObject = Object.Instantiate(Scene.playerPrefab, CurrentPosition, Quaternion.identity);
         _animTransform = _playerGameObject.transform.Find("Animator");
 
-        mAnimator = _animTransform.GetComponentInChildren<Animator>();
-        mSR = _animTransform.GetComponentInChildren<SpriteRenderer>();
-        mCollider2D = _animTransform.GetComponentInChildren<BoxCollider2D>();
-        mSize = mCollider2D.bounds.size;
+        Animator = _animTransform.GetComponentInChildren<Animator>();
+        SpriteRenderer = _animTransform.GetComponentInChildren<SpriteRenderer>();
+        Collider2D = _animTransform.GetComponentInChildren<BoxCollider2D>();
+        Size = Collider2D.bounds.size;
+
+        var controller = Animator.runtimeAnimatorController;
+        var clips = controller.animationClips;
+        foreach (var clip in clips)
+        {
+            if (clip.name == "playerBaseAttack")
+            {
+                Debug.Log($"playerBaseAttack 动画一轮播放时长为:{clip.length}");
+                break;
+            }
+        }
 
         StateMachine.Initialize(Idle);
     }
 
     public int Update()
+    {
+        CollisionCheck();
+        StateMachine.Update();
+        return 0;
+    }
+
+    private void CollisionCheck()
     {
         var blocks = _stage.blocks;
         var bakPosition = CurrentPosition;
@@ -110,32 +139,27 @@ public partial class Player
 
             var cx = Tools.Cover(xMoveDir, CurrentPosition.x, finalPosition.x) is false;
             var cy = Tools.Cover(yMoveDir, CurrentPosition.y, finalPosition.y) is false;
-            if (cx || cy)
+            if (!cx && !cy) return;
+            var more = false;
+            if (cx && WallPushDir == 0)
             {
-                var more = false;
-                if (cx && WallPushDir == 0)
-                {
-                    CurrentPosition.x = finalPosition.x;
-                    more = true;
-                }
-
-                if (cy && OnGround is false)
-                {
-                    CurrentPosition.y = finalPosition.y;
-                    more = true;
-                }
-
-                if (more) PathDetection(blocks);
+                CurrentPosition.x = finalPosition.x;
+                more = true;
             }
+
+            if (cy && OnGround is false)
+            {
+                CurrentPosition.y = finalPosition.y;
+                more = true;
+            }
+
+            if (more) PathDetection(blocks);
         }
         else
         {
             CurrentPosition = finalPosition;
             PathDetection(blocks);
         }
-
-        StateMachine.Update();
-        return 0;
     }
 
     private int PathDetection(SpaceIndexFloat<Block> blocks)
@@ -143,8 +167,8 @@ public partial class Player
         var posLT = GetPosLT();
         var posRB = new Vector2
         {
-            x = posLT.x + mSize.x - 0.001f,
-            y = posLT.y - mSize.y + 0.001f
+            x = posLT.x + Size.x - 0.001f,
+            y = posLT.y - Size.y + 0.001f
         };
 
         var pushOutWays = 0;
@@ -155,14 +179,14 @@ public partial class Player
             for (var colIdx = criFrom.X; colIdx <= criTo.X; colIdx++)
             {
                 var bc = blocks.At(new XYi(colIdx, rowIdx));
-                if (bc is not null && bc.IsCrossBox(posLT, mSize))
+                if (bc is not null && bc.IsCrossBox(posLT, Size))
                 {
-                    var pushOutBox = bc.CalculatePushOutBox(posLT, mSize);
+                    var pushOutBox = bc.CalculatePushOutBox(posLT, Size);
                     if (pushOutBox.Way != PushOutWay.Unknown)
                     {
                         posLT = pushOutBox.Pos;
-                        posRB.x = posLT.x + mSize.x;
-                        posRB.y = posLT.y - mSize.y;
+                        posRB.x = posLT.x + Size.x;
+                        posRB.y = posLT.y - Size.y;
                         pushOutWays |= (int)pushOutBox.Way;
                     }
                 }
@@ -171,8 +195,8 @@ public partial class Player
 
         if (pushOutWays != 0)
         {
-            CurrentPosition.x = posLT.x + mSize.x / 2;
-            CurrentPosition.y = posLT.y - mSize.y;
+            CurrentPosition.x = posLT.x + Size.x / 2;
+            CurrentPosition.y = posLT.y - Size.y;
             if ((pushOutWays & (int)PushOutWay.Up) != 0)
             {
                 CurrentVelocity.y = 0;
@@ -206,8 +230,8 @@ public partial class Player
     public Vector2 GetPosLT()
     {
         var pos = CurrentPosition;
-        pos.x -= mSize.x / 2;
-        pos.y += mSize.y;
+        pos.x -= Size.x / 2;
+        pos.y += Size.y;
         return pos;
     }
 
@@ -216,6 +240,8 @@ public partial class Player
         FaceDirection *= -1;
         _animTransform.Rotate(0, 180, 0);
     }
+
+    #region Velocity
 
     public void SetVelocity(Vector2 velocity)
     {
@@ -229,13 +255,27 @@ public partial class Player
         else CurrentVelocity.x = Scene.PlayerSpeed.x * playerMoveValue.x;
 
         if (OnGround) CurrentVelocity.y = 0;
-        else CurrentVelocity.y -= Scene.PlayerGravity;
+        else UpdateGravityVelocity();
 
         HandleFlip(CurrentVelocity.x);
+
+        if (Attacking()) CurrentVelocity.x = 0;
 
         CurrentVelocity.x *= scaleX;
         CurrentVelocity.y *= scaleY;
     }
+
+    public void UpdateGravityVelocity()
+    {
+        CurrentVelocity.y -= Scene.PlayerGravity;
+    }
+
+    public void UpdateGroundVelocity()
+    {
+    }
+
+    #endregion
+
 
     public void HandleFlip(float xVelocity)
     {
@@ -247,23 +287,44 @@ public partial class Player
             Flip();
     }
 
+    #region Dash
+
     public void CastDash()
     {
         if (!CanDash()) return;
-        DashReadyFrames = Scene.Time + _dashColdDownFrames;
-        DashCastDelayFrames = Scene.Time + _dashCastingFrames;
+        _dashReadyFrames = Scene.Time + _dashColdDownFrames;
+        _dashCastDelayFrames = Scene.Time + _dashCastingFrames;
         SetVelocity(new Vector2(Scene.PlayerDashSpeed * FaceDirection, 0));
     }
 
     public bool CanDash()
     {
-        return Scene.Time > DashReadyFrames;
+        return Scene.Time > _dashReadyFrames;
     }
 
     public bool Dashing()
     {
-        return DashCastDelayFrames > Scene.Time;
+        if (WallPushDir != 0) _dashCastDelayFrames = Scene.Time;
+        return _dashCastDelayFrames > Scene.Time;
     }
+
+    #endregion
+
+    #region Attack
+
+    public void CastAttack()
+    {
+        _attackCastingDelayFrames = Scene.Time + _attackCastingFrames;
+        SetVelocity(new Vector2(0, CurrentVelocity.y));
+    }
+
+    public bool Attacking()
+    {
+        return Scene.Time <= _attackCastingDelayFrames;
+    }
+
+    #endregion
+
 
     /// <summary>
     /// 是否一直对着墙壁移动
@@ -274,8 +335,9 @@ public partial class Player
         return playerMoveValue.x != 0 && CurrentVelocity.x == 0;
     }
 
-    public void UpdateGroundVelocity()
+    public void AttackCheckTrigger()
     {
+        Debug.Log("---------------------------------------------------------------------------");
     }
 
 

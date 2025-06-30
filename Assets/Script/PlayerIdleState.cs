@@ -13,6 +13,8 @@ public class PlayerIdleState : PlayerGroundState
     public override int Update()
     {
         base.Update();
+        if (_player.Dashing() || _player.Attacking())
+            return 0;
         if (_player.CurrentVelocity.y < 0)
             _stateMachine.ChangeState(_player.JumpFall);
         else if (_player._moving)

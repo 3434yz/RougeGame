@@ -15,12 +15,12 @@ public abstract class EntityState
 
     public virtual void Enter()
     {
-        _player.mAnimator.SetBool(_animBoolName, true);
+        _player.Animator.SetBool(_animBoolName, true);
     }
 
     public virtual int Update()
     {
-        _player.mAnimator.SetFloat("yVelocity", _player.CurrentVelocity.y);
+        _player.Animator.SetFloat("yVelocity", _player.CurrentVelocity.y);
         if (_player.InvokerDash())
         {
             if(_player.CanDash())
@@ -32,6 +32,6 @@ public abstract class EntityState
 
     public virtual void Exit()
     {
-        _player.mAnimator.SetBool(_animBoolName, false);
+        _player.Animator.SetBool(_animBoolName, false);
     }
 }

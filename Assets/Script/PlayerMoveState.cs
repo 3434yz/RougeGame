@@ -9,7 +9,7 @@ public class PlayerMoveState : PlayerGroundState
     public override int Update()
     {
         base.Update();
-        if (_player.Dashing())
+        if (_player.Dashing() || _player.Attacking())
             return 0;
         if (false == _player._moving)
             _player.StateMachine.ChangeState(_player.Idle);
